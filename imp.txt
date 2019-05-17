@@ -1,0 +1,6 @@
+
+ You have an out of date version of setuptools, sorry for the inconvenience (and hard to understand error).
+
+Simply pip install --upgrade setuptools
+
+If it doesn't work, we can re-open and discuss. Pre-emptively closing since the issue seems clear.
