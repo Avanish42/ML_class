@@ -1,0 +1,185 @@
+
+/*
+
+*
+*
+*@owner avanish.singh42@gmail.com
+*/
+
+=============Grafhana Document==================================
+
+	For getting data in gafana we need  
+
+	Collectd -		Demans run in background to get information from system 
+	InfluxDB -      Timeseries database
+	Grafana  -      To show influxDb data  in dashborad
+
+	Monitor apis 
+		Laravel Application with this packege
+			#composer require league/statsd
+
+
+			Configure Laravel application  
+			
+			config.php
+				'grafanaSetting' => [
+				        'grafanaDbHost' => env('GRAFANA_DB_HOST', 'localhost'),
+				        'grafanaDbPort' => env('GRAFANA_DB_PORT', '8125'),
+				        'grafanaApiPrefix' => env('GRAFANA_API_PREFIX', 'workFlowApi')
+
+				     ];
+
+				 Make one middle ware to get api data 
+
+
+	============ Installing Collectd==========
+
+	Install
+		#sudo apt-get update
+		#sudo apt-get install collectd 
+
+ 	Check collectd Service status
+
+	    #sudo service collectd status
+
+	    Collect D in plugin based deamon  
+	    Ex:  
+	     LoadPlugin cpu    
+	     LoadPlugin statsd // Listen laravel request 
+		 LoadPlugin network  // Bind Address transfer every request data to influx db
+
+
+	     	//configuration plugin
+
+			<Plugin cpu>
+			  ReportByState = false
+			  ReportByCpu = false
+			  ValuesPercentage = true
+			</Plugin>
+
+			<Plugin statsd>
+				Host "0.0.0.0"
+				Port "8125"
+				TimerPercentile 90.0
+				TimerUpper     true
+				TimerCount     false
+			</Plugin
+
+
+			<Plugin "network">
+			    Server "0.0.0.0" "25826"
+			</Plugin>
+
+ 
+
+ 	============ Installing InfluxDB==========
+
+			#sudo apt-get update 
+			#sudo apt-get install influxdb
+
+
+		Run Influx  server
+
+			#systemctl start influxd		// for start
+			#systemctl status influxd 		// for current status 
+
+
+
+		configuration influx with collectd
+
+			influxdb.conf
+
+				[[collectd]]
+				   enabled = true
+				   bind-address = "0.0.0.0:25826"  // Binding address with grafana
+				   database = "test1"
+				   retention-policy = ""
+				  #
+				  # The collectd service supports either scanning a directory for multiple types
+				  # db files, or specifying a single db file.
+				   typesdb = "/usr/local/share/collectd/types.db"
+				  #
+				   security-level = "none"
+				  # auth-file = "/etc/collectd/auth_file"
+
+
+
+
+
+
+
+	============ Installing Grafana==========
+
+
+	#sudo apt update
+	#sudo apt install grafana
+
+
+Run grafana server
+
+	#systemctl start grafana-server 		// for start
+	#systemctl status grafana-server 		// for current status 
+
+
+By default run on 3000 port to check runing or not tupe this commnd 
+	
+	#netstat -plntu // 
+
+	tcp6        0 :::3000                 :::*  Listen
+
+
+			===============Notification in grafana============
+
+				Setup SMTP in Grafana
+				Go to "conf" directory of your Grafana distribution
+				Open your configuration file (as we did the setup using defaults so I am using "defaults.ini"). Navigate to SMTP/Emailing settings and update your SMTP details. As we have our fake-SMTP server running on localhost and on port 25. My "defaults.ini" has below configurations.
+
+
+				Setup New Notification Channel
+				Login to Grafana with username and password.
+				Click on the "Bell" icon on the left sidebar.
+				Select "Notification channels."
+				select Email and setup
+
+
+
+
+
+
+Graphana Document
+
+Command to install grafana
+sudo apt update
+sudo apt install grafana
+
+
+Run grafana server
+
+systemctl start grafana-server // for start
+systemctl status grafana-server // for current status 
+
+
+by default run on 3000 port to check runing or not tupe this commnd 
+netstat -plntu // 
+
+tcp6        0 :::3000                 :::*  Listen
+
+
+Notification in grafana
+
+Setup SMTP in Grafana
+Go to "conf" directory of your Grafana distribution
+Open your configuration file (as we did the setup using defaults so I am using "defaults.ini"). Navigate to SMTP/Emailing settings and update your SMTP details. As we have our fake-SMTP server running on localhost and on port 25. My "defaults.ini" has below configurations.
+
+
+Setup New Notification Channel
+Login to Grafana with username and password.
+Click on the "Bell" icon on the left sidebar.
+Select "Notification channels."
+select Email and setup
+
+
+
+
+
+

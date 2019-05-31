@@ -1,0 +1,36 @@
+FQDNLookup true
+
+LoadPlugin cpu
+LoadPlugin memory
+LoadPlugin statsd
+LoadPlugin swap
+LoadPlugin network
+
+<Plugin memory>
+	ValuesAbsolute true 
+	ValuesPercentage false
+</Plugin>
+
+
+<Plugin statsd>
+	Host "127.0.0.1"
+	Port "8125"
+	TimerPercentile 90.0
+	TimerUpper     true
+	TimerCount     false
+</Plugin>
+
+<Include "/etc/collectd/collectd.conf.d">
+	Filter "*.conf"
+</Include>
+
+<Plugin "network">
+    Server "127.0.0.1" "25826"
+</Plugin>
+
+<Plugin cpu>
+  ReportByState = false
+  ReportByCpu = false
+  ValuesPercentage = true
+</Plugin>
+
